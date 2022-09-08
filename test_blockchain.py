@@ -16,6 +16,7 @@ def test_genesis_block():
         assert block['payload']['user_name'] == ''
         assert block['payload']['vote'] == 0
 
+
 def test_create_block():
     with freeze_time('2022-01-01'):
         BlockchainInstance = Blockchain()

@@ -3,7 +3,9 @@ from blockchain import Blockchain
 
 app = Flask(__name__)
 
+
 BlockChainInstance = Blockchain()
+
 
 @app.route('/mine', methods=['POST'])
 def mine():
@@ -19,6 +21,7 @@ def mine():
     return jsonify({
         'error': 'Missing form data'
     }), 400
+
 
 @app.route('/chain', methods=['GET'])
 def chain():

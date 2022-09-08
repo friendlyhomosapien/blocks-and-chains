@@ -9,6 +9,6 @@ jobs:
         with:
           python-version: '3.10' 
       - run: pip install -r requirements.txt
+      - run: pycodestyle .
       - run: pytest --cov=blockchain test_blockchain.py 
       - run: echo "🍏 This job's status is ${{ job.status }}."
-
