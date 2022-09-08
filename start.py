@@ -2,13 +2,17 @@ import hashlib
 
 from flask import Flask, jsonify
 
-api = Flask(__name__)
+def hash(string):
+    encodedString = str(string).encode()
+    return hashlib.sha256(encodedString).hexdigest()
 
-@api.route("/", methods=['GET', 'POST'])
+app = Flask(__name__)
+
+@app.route("/")
 def app():
     response = {
         'hash': 'test',
         'success': 'true',
-        'previous_hash': hashlib.sha256('test')
+        'previous_hash': hash('test')
     }
     return jsonify(response), 200
