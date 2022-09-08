@@ -10,6 +10,5 @@ jobs:
           python-version: '3.10' 
       - run: pip install -r requirements.txt
       - run: pytest --cov=blockchain test_blockchain.py 
-      - run: pytest --cov=server test_server.py 
       - run: echo "🍏 This job's status is ${{ job.status }}."
 
