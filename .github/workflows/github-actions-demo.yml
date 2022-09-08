@@ -1,0 +1,15 @@
+name: GitHub Actions Demo
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' 
+      - run: pip install requirements.txt
+      - run: pytest --cov=blockchain test_blockchain.py 
+      - run: pytest --cov=server test_server.py 
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+

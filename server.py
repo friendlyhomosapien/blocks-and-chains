@@ -10,8 +10,8 @@ def mine():
     if 'user_name' in request.form and 'vote' in request.form:
         previous_block = BlockChainInstance.previousBlock()
         new_block = BlockChainInstance.createBlock(
-            'Steven',
-            1,
+            request.form['user_name'],
+            request.form['vote'],
             BlockChainInstance.hash(previous_block)
         )
         return jsonify(new_block), 200
@@ -19,3 +19,7 @@ def mine():
     return jsonify({
         'error': 'Missing form data'
     }), 400
+
+@app.route('/chain', methods=['GET'])
+def chain():
+    return jsonify(BlockChainInstance.chain), 200

@@ -1,5 +1,5 @@
 import hashlib
-import datetime
+import time
 import json
 
 class Blockchain:
@@ -9,10 +9,12 @@ class Blockchain:
 
     def createBlock(self, user_name, vote, previous_hash):
         block = {
-            'user_name': user_name,
-            'vote': vote,
+            'payload': {
+                'user_name': user_name,
+                'vote': vote,
+            },
             'previous_hash': previous_hash,
-            'timestamp': str(datetime.datetime.now())
+            'timestamp': time.time()
         }
         self.chain.append(block)
         return block
