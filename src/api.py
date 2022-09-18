@@ -1,9 +1,11 @@
 from flask import (Blueprint, jsonify, request)
 from . import blockchain
 
+
 bp = Blueprint('api', __name__)
 
 BlockchainInstance = blockchain.Blockchain()
+
 
 @bp.route('/mine', methods=['POST'])
 def mine():
@@ -14,10 +16,10 @@ def mine():
         previous_block = BlockchainInstance.previousBlock()
 
         new_block = BlockchainInstance.createBlock(
-            sender_name = jsonData['sender_name'],
-            amount = jsonData['amount'],
-            currency = jsonData['currency'],
-            previous_hash = BlockchainInstance.hash(previous_block)
+            sender_name=jsonData['sender_name'],
+            amount=jsonData['amount'],
+            currency=jsonData['currency'],
+            previous_hash=BlockchainInstance.hash(previous_block)
         )
         return jsonify(new_block), 200
 
@@ -25,6 +27,7 @@ def mine():
         'error': 'Missing form data',
         'formData': jsonData
     }), 400
+
 
 @bp.route('/chain', methods=['GET'])
 def chain():

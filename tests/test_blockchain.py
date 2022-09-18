@@ -4,6 +4,7 @@ import time
 from freezegun import freeze_time
 from src.blockchain import Blockchain
 
+
 class TestBlockchain(unittest.TestCase):
     def test_create_block(self):
         with freeze_time('2022-01-01'):

@@ -2,10 +2,16 @@ import hashlib
 import time
 import json
 
+
 class Blockchain:
     def __init__(self):
         self.chain = []
-        self.createBlock(sender_name='', amount=0, currency='none', previous_hash='0')
+        self.createBlock(
+            sender_name='',
+            amount=0,
+            currency='none',
+            previous_hash='0'
+        )
 
     def createBlock(self, sender_name, amount, currency, previous_hash):
         block = {
