@@ -2,17 +2,17 @@ import hashlib
 import time
 import json
 
-
 class Blockchain:
     def __init__(self):
         self.chain = []
-        self.createBlock(user_name='', vote=0, previous_hash='0')
+        self.createBlock(sender_name='', amount=0, currency='none', previous_hash='0')
 
-    def createBlock(self, user_name, vote, previous_hash):
+    def createBlock(self, sender_name, amount, currency, previous_hash):
         block = {
             'payload': {
-                'user_name': user_name,
-                'vote': vote,
+                'sender_name': sender_name,
+                'amount': amount,
+                'currency': currency
             },
             'previous_hash': previous_hash,
             'timestamp': time.time()
@@ -26,3 +26,10 @@ class Blockchain:
     def hash(self, block):
         encoded_block = json.dumps(block).encode()
         return hashlib.sha256(encoded_block).hexdigest()
+
+    def fields(self):
+        return [
+            'sender_name',
+            'amount',
+            'currency',
+        ]
