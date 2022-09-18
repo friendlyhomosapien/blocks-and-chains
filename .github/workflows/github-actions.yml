@@ -8,8 +8,6 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10' 
-      - run: pip install requirements.txt
-      - run: pipenv install
+      - run: pip install -r requirements.txt
       - run: pycodestyle .
-      - run: pipenv shell
       - run: py.test
