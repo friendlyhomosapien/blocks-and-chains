@@ -29,6 +29,7 @@ def mine():
 def chain():
     return jsonify(BlockchainInstance.chain), 200
 
+
 @bp.route('/pool', methods=['GET'])
 def pool():
     return jsonify(BlockchainInstance.mempool), 200

@@ -8,7 +8,7 @@ class Transaction():
     ):
         self.proof = None
         self.timestamp = time.time()
-        self.payload = payload\
+        self.payload = payload
 
     def payloadFields():
         return [

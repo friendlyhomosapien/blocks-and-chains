@@ -24,4 +24,3 @@ class Block():
     def hash(self):
         block_string = json.dumps(self.__dict__, sort_keys=True).encode()
         return sha256(block_string).hexdigest()
-
