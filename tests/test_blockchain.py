@@ -2,40 +2,33 @@ import unittest
 import time
 
 from freezegun import freeze_time
-from src.blockchain import Blockchain
+from src.Blockchain import Blockchain
 
 
 class TestBlockchain(unittest.TestCase):
     def test_create_block(self):
         with freeze_time('2022-01-01'):
-            BlockchainInstance = Blockchain()
+            factory = Blockchain()
 
-            previous_block = BlockchainInstance.previousBlock()
-            previous_block_hashed = BlockchainInstance.hash(previous_block)
-
-            new_block = BlockchainInstance.createBlock(
-                'test_user',
-                999,
-                'USD',
-                previous_block_hashed
+            new_block = factory.addTransaction(
+                jsonData={
+                    'sender': 'test_sender',
+                    'receiver': 'test_receiver',
+                    'amount': 999,
+                    'currency': 999,
+                }
             )
 
-            self.assertEqual(new_block['previous_hash'], previous_block_hashed)
-            self.assertEqual(new_block['timestamp'], time.time())
-            self.assertEqual(new_block['payload']['sender_name'], 'test_user')
-            self.assertEqual(new_block['payload']['amount'], 999)
-            self.assertEqual(new_block['payload']['currency'], 'USD')
+            self.assertEqual(new_block.hash(), factory.lastHash())
+            self.assertEqual(new_block.timestamp, time.time())
 
     def test_genesis_block(self):
         with freeze_time('2022-01-01'):
-            BlockchainInstance = Blockchain()
+            factory = Blockchain()
 
-            assert len(BlockchainInstance.chain) == 1
+            self.assertEqual(len(factory.chain), 1)
 
-            block = BlockchainInstance.chain[0]
+            block = factory.chain[0]
 
             self.assertEqual(block['previous_hash'], '0')
             self.assertEqual(block['timestamp'], time.time())
-            self.assertEqual(block['payload']['sender_name'], '')
-            self.assertEqual(block['payload']['amount'], 0)
-            self.assertEqual(block['payload']['currency'], 'none')

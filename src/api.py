@@ -1,27 +1,23 @@
 from flask import (Blueprint, jsonify, request)
-from . import blockchain
+from .Blockchain import Blockchain
+from .Block import Block
+from .Transaction import Transaction
 
 
 bp = Blueprint('api', __name__)
 
-BlockchainInstance = blockchain.Blockchain()
+BlockchainInstance = Blockchain()
 
 
 @bp.route('/mine', methods=['POST'])
 def mine():
     jsonData = request.get_json()
-    print(jsonData)
 
-    if all(k in jsonData for k in (BlockchainInstance.fields())):
-        previous_block = BlockchainInstance.previousBlock()
+    if all(k in jsonData for k in (Transaction.payloadFields())):
 
-        new_block = BlockchainInstance.createBlock(
-            sender_name=jsonData['sender_name'],
-            amount=jsonData['amount'],
-            currency=jsonData['currency'],
-            previous_hash=BlockchainInstance.hash(previous_block)
-        )
-        return jsonify(new_block), 200
+        BlockchainInstance.addTransaction(jsonData)
+
+        return jsonify(jsonData), 200
 
     return jsonify({
         'error': 'Missing form data',
@@ -32,3 +28,7 @@ def mine():
 @bp.route('/chain', methods=['GET'])
 def chain():
     return jsonify(BlockchainInstance.chain), 200
+
+@bp.route('/pool', methods=['GET'])
+def pool():
+    return jsonify(BlockchainInstance.mempool), 200

@@ -4,7 +4,8 @@ def test_chain(client):
 
 def test_mine(client):
     assert client.post('/mine', json={
-        'sender_name': 'Test user',
+        'sender': 'test_sender',
+        'receiver': 'test_receiver',
         'amount': 999,
         'currency': 'Bitcoin',
     }).status_code == 200
