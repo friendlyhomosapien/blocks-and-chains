@@ -28,7 +28,10 @@ class Blockchain:
         return [block.toDict() for block in self.chain]
 
     def getUnconfirmedTransactions(self):
-        return [transaction.toDict() for transaction in self.unconfirmed_transactions]
+        return [
+            transaction.toDict() for transaction
+            in self.unconfirmed_transactions
+        ]
 
     def last(self):
         return self.chain[-1]
@@ -41,8 +44,11 @@ class Blockchain:
         self.chain.append(genesis_block)
         return genesis_block
 
-    def validateProof(self, block:Block, proof:str) -> bool:
-        return (proof.startswith('0' * Blockchain.difficulty) and proof == block.createHash())
+    def validateProof(self, block: Block, proof: str) -> bool:
+        return (
+            proof.startswith('0' * Blockchain.difficulty) and
+            proof == block.createHash()
+        )
 
     def validateChain(self) -> bool:
         is_valid = True
@@ -55,7 +61,10 @@ class Blockchain:
             print(prev_hash)
             print(block.previous_hash)
 
-            if not self.validateProof(block, proof) or prev_hash != block.previous_hash:
+            if (
+                not self.validateProof(block, proof)
+                or prev_hash != block.previous_hash
+            ):
                 is_valid = False
                 break
 
@@ -63,7 +72,7 @@ class Blockchain:
 
         return is_valid
 
-    def createProof(block:Block, start_nonce:int, end_nonce:int):
+    def createProof(block: Block, start_nonce: int, end_nonce: int):
         block.nonce = start_nonce
 
         hash = ''
@@ -92,10 +101,10 @@ class Blockchain:
         block, nonce_range = args
         return Blockchain.createProof(block, nonce_range[0], nonce_range[1])
 
-    def mine(self, block:Block) -> tuple:
+    def mine(self, block: Block) -> tuple:
         nonce = 0
 
-        while True:    
+        while True:
             nonce_ranges = [
                 (nonce + i * self.batch_size, nonce + (i+1) * self.batch_size)
                 for i in range(self.max_workers)
@@ -105,16 +114,22 @@ class Blockchain:
                 (block, nonce_range) for nonce_range in nonce_ranges
             ]
 
-            for result in self.pool.imap_unordered(Blockchain.startProcess, params):
-                if result is not None: 
+            for result in self.pool.imap_unordered(
+                Blockchain.startProcess,
+                params
+            ):
+                if result is not None:
                     # Remove unconfirmed transactions
                     self.unconfirmed_transactions = []
                     return result
 
             nonce += self.max_workers * self.batch_size
 
-    def addBlock(self, block:Block, proof:str) -> bool:
-        if self.last().createHash() != block.previous_hash and len(self.chain) > 1:
+    def addBlock(self, block: Block, proof: str) -> bool:
+        if (
+            self.last().createHash() != block.previous_hash
+            and len(self.chain) > 1
+        ):
             print('last block hash does not match block previous hash')
             return False
 
@@ -128,11 +143,15 @@ class Blockchain:
 
         return True
 
-    def mineNext(self) -> bool: 
+    def mineNext(self) -> bool:
         if not self.unconfirmed_transactions:
             return False
 
-        next_block = Block(self.last().index + 1, self.unconfirmed_transactions, self.last().createHash())
+        next_block = Block(
+            self.last().index + 1,
+            self.unconfirmed_transactions,
+            self.last().createHash()
+        )
 
         next_block.nonce, proof = self.mine(next_block)
 

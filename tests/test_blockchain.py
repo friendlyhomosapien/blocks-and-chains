@@ -15,7 +15,6 @@ class TestBlockchain(unittest.TestCase):
         'currency': 999,
     }
 
-
     def test_genesis_block(self):
         with freeze_time(self.freeze_at):
             factory = Blockchain()
@@ -24,19 +23,39 @@ class TestBlockchain(unittest.TestCase):
 
             self.assertEqual(len(factory.chain), 1)
 
-            self.assertEqual(genesis_block.index, factory.chain[0].index)
-            self.assertEqual(genesis_block.previous_hash, factory.chain[0].previous_hash)
-            self.assertEqual(genesis_block.timestamp, factory.chain[0].timestamp)
-            self.assertEqual(genesis_block.nonce, factory.chain[0].nonce)
+            self.assertEqual(
+                genesis_block.index,
+                factory.chain[0].index
+            )
+            self.assertEqual(
+                genesis_block.previous_hash,
+                factory.chain[0].previous_hash
+            )
+            self.assertEqual(
+                genesis_block.timestamp,
+                factory.chain[0].timestamp
+            )
+            self.assertEqual(
+                genesis_block.nonce,
+                factory.chain[0].nonce
+            )
 
     def test_add_transaction(self):
         with freeze_time(self.freeze_at):
             factory = Blockchain()
 
-            new_transaction = factory.addTransaction(payload=self.test_payload)
+            new_transaction = factory.addTransaction(
+                payload=self.test_payload
+            )
 
-            self.assertEqual(new_transaction.hash, factory.unconfirmed_transactions[-1].hash)
-            self.assertEqual(new_transaction.payload, factory.unconfirmed_transactions[-1].payload)
+            self.assertEqual(
+                new_transaction.hash,
+                factory.unconfirmed_transactions[-1].hash
+            )
+            self.assertEqual(
+                new_transaction.payload,
+                factory.unconfirmed_transactions[-1].payload
+            )
             self.assertEqual(new_transaction.timestamp, time.time())
 
     def test_mine(self):

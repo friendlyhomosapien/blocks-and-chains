@@ -6,9 +6,9 @@ from merkletools import MerkleTools
 class Block():
     def __init__(
         self,
-        index:int,
-        txs:list,
-        previous_hash:str,
+        index: int,
+        txs: list,
+        previous_hash: str,
         timestamp=None,
         nonce=0,
     ) -> None:
@@ -44,9 +44,9 @@ class Block():
 
         for tx in self.txs:
             mt.add_leaf(tx.hash)
-        
+
         mt.make_tree()
-        
+
         self.merkle_root = mt.get_merkle_root()
-        
+
         return self.merkle_root

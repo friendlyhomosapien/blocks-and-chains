@@ -6,11 +6,9 @@ import logging
 def create_app(config: dict = None) -> Flask:
     app = Flask(__name__, instance_relative_config=True)
 
-    # configure
-    # ...
-    handler = logging.FileHandler('test.log')   # creates handler for the log file
-    app.logger.addHandler(handler)              # adds handler to the werkzeug WSGI logger
-    app.logger.setLevel(logging.DEBUG)          # Set the log level to debug
+    handler = logging.FileHandler('test.log')
+    app.logger.addHandler(handler)
+    app.logger.setLevel(logging.DEBUG)
 
     if config is None:
         app.config.from_pyfile('config.py', silent=True)

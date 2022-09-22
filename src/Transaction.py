@@ -13,7 +13,14 @@ class Transaction():
         self.hash = self.createHash()
 
     def createHash(self) -> str:
-        return sha256(sha256('{}{}'.format(self.payload, self.timestamp).encode()).hexdigest().encode('utf8')).hexdigest()
+        return sha256(
+            sha256(
+                '{}{}'.format(
+                    self.payload,
+                    self.timestamp
+                ).encode()
+            ).hexdigest().encode('utf8')
+        ).hexdigest()
 
     def toDict(self) -> dict:
         return dict(
