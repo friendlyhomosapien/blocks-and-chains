@@ -1,7 +1,7 @@
 from flask import (Blueprint, jsonify, request)
-from .Blockchain import Blockchain
-from .Transaction import Transaction
-from .HashRate import calcHashRate
+from .blockchain import Blockchain
+from .transaction import Transaction
+from .hashrate import calcHashRate
 
 
 bp = Blueprint('api', __name__)

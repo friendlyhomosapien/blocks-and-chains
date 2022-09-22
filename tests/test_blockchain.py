@@ -2,8 +2,8 @@ import unittest
 import time
 
 from freezegun import freeze_time
-from src import Blockchain
-from src import Block
+from src.blockchain import Blockchain
+from src.block import Block
 
 
 class TestBlockchain(unittest.TestCase):
@@ -17,7 +17,7 @@ class TestBlockchain(unittest.TestCase):
 
     def test_genesis_block(self):
         with freeze_time(self.freeze_at):
-            factory = Blockchain.Blockchain()
+            factory = Blockchain()
 
             factory.createGenesisBlock()
 
@@ -25,7 +25,7 @@ class TestBlockchain(unittest.TestCase):
 
     def test_add_transaction(self):
         with freeze_time(self.freeze_at):
-            factory = Blockchain.Blockchain()
+            factory = Blockchain()
 
             new_transaction = factory.addTransaction(
                 payload=self.test_payload
@@ -42,12 +42,12 @@ class TestBlockchain(unittest.TestCase):
             self.assertEqual(new_transaction.timestamp, time.time())
 
     def test_mine(self):
-        factory = Blockchain.Blockchain()
+        factory = Blockchain()
         factory.addTransaction(payload=self.test_payload)
         self.assertEqual(factory.mineNext(), True)
 
     def test_validate_chain(self):
-        factory = Blockchain.Blockchain()
+        factory = Blockchain()
         factory.addTransaction(payload=self.test_payload)
 
         factory.mineNext()
@@ -55,12 +55,12 @@ class TestBlockchain(unittest.TestCase):
         self.assertEqual(factory.validateChain(), True)
 
     def test_validate_chain_invalid(self):
-        factory = Blockchain.Blockchain()
+        factory = Blockchain()
         factory.addTransaction(payload=self.test_payload)
 
         factory.mineNext()
 
-        block = Block.Block(0, [], '0', time.time(), 0)
+        block = Block(0, [], '0', time.time(), 0)
         block.hash = ''
         factory.chain.append(block)
 

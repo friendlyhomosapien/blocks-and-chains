@@ -1,11 +1,8 @@
 import json
-from logging import log
-import time
-from hashlib import sha256
 from multiprocessing import Pool
 
-from .Block import Block
-from .Transaction import Transaction
+from .block import Block
+from .transaction import Transaction
 
 
 class Blockchain:

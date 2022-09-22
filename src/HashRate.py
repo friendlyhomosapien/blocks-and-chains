@@ -1,6 +1,6 @@
 import time
-from .Block import Block
-from .Transaction import Transaction
+from .block import Block
+from .transaction import Transaction
 from multiprocessing import Pool
 
 
