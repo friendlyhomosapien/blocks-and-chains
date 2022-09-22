@@ -1,70 +1,143 @@
 import json
+from logging import log
 import time
 from hashlib import sha256
+from multiprocessing import Pool
 
 from .Block import Block
 from .Transaction import Transaction
 
 
 class Blockchain:
+    difficulty = 1
+    max_workers = 2
+    pool = None
+    batch_size = int(2.5e5)
+    unconfirmed_transactions = []
+
     def __init__(self) -> None:
+        self.pool = Pool(processes=Blockchain.max_workers)
         self.chain = []
         self.mempool = []
-        block = Block(
-            proof=1,
-            previous_hash='0',
-            timestamp=time.time(),
-            payload={
-                'sender': '',
-                'receiver': '',
-                'amount': 0,
-                'currency': 'none'
-            }
-        )
+        self.unconfirmed_transactions = []
 
-        self.chain.append(block.__dict__)
+    def __str__(self):
+        return json.dumps(self.getChain(), ensure_ascii=False)
+
+    def getChain(self):
+        return [block.toDict() for block in self.chain]
+
+    def getUnconfirmedTransactions(self):
+        return [transaction.toDict() for transaction in self.unconfirmed_transactions]
 
     def last(self):
         return self.chain[-1]
 
-    def lastHash(self) -> str:
-        return self.hash(self.last())
+    def createGenesisBlock(self) -> Block:
+        genesis_block = Block(0, [Transaction('genesis')], '0', None, 0)
 
-    def hash(self, block):
-        block_string = json.dumps(block, sort_keys=True).encode()
-        return sha256(block_string).hexdigest()
+        genesis_block.nonce, genesis_block.hash = self.mine(genesis_block)
 
-    def proof(self, previous_proof):
-        proof = 1
-        check_proof = False
+        self.chain.append(genesis_block)
+        return genesis_block
 
-        while check_proof is False:
-            hash_operation = sha256(
-                str(proof**2 - previous_proof**2).encode()).hexdigest()
-            if hash_operation[:5] == '00000':
-                check_proof = True
-            else:
-                proof += 1
+    def validateProof(self, block:Block, proof:str) -> bool:
+        return (proof.startswith('0' * Blockchain.difficulty) and proof == block.createHash())
 
-        return proof
+    def validateChain(self) -> bool:
+        is_valid = True
+        prev_hash = '0'
 
-    def addTransaction(self, jsonData: dict):
-        transaction = Transaction(payload=jsonData).__dict__
+        for block in self.chain:
+            proof = block.createHash()
+            delattr(block, 'hash')
 
-        self.mempool.append(transaction)
+            print(prev_hash)
+            print(block.previous_hash)
 
-        transaction['proof'] = self.proof(self.chain[-1]['proof'])
-        transaction['previous_hash'] = self.lastHash()
+            if not self.validateProof(block, proof) or prev_hash != block.previous_hash:
+                is_valid = False
+                break
 
-        self.mempool.pop(0)
+            block.hash, prev_hash = proof, proof
 
-        block = Block(
-            proof=transaction['proof'],
-            previous_hash=transaction['previous_hash'],
-            timestamp=transaction['timestamp'],
-            payload=transaction['payload']
-        )
+        return is_valid
 
-        self.chain.append(block.__dict__)
+    def createProof(block:Block, start_nonce:int, end_nonce:int):
+        block.nonce = start_nonce
 
-        return block
+        hash = ''
+
+        print('Searched from %d to %d' % (start_nonce, end_nonce))
+
+        for nonce in range(start_nonce, end_nonce):
+            block.nonce = nonce
+            hash = block.createHash()
+            if hash.startswith('0' * Blockchain.difficulty):
+                return (nonce, hash)
+
+        return None
+
+    def addTransaction(self, payload):
+        if len(self.unconfirmed_transactions) == 0 and len(self.chain) == 0:
+            self.createGenesisBlock()
+
+        transaction = Transaction(payload)
+
+        self.unconfirmed_transactions.append(transaction)
+
+        return transaction
+
+    def startProcess(args) -> tuple:
+        block, nonce_range = args
+        return Blockchain.createProof(block, nonce_range[0], nonce_range[1])
+
+    def mine(self, block:Block) -> tuple:
+        nonce = 0
+
+        while True:    
+            nonce_ranges = [
+                (nonce + i * self.batch_size, nonce + (i+1) * self.batch_size)
+                for i in range(self.max_workers)
+            ]
+
+            params = [
+                (block, nonce_range) for nonce_range in nonce_ranges
+            ]
+
+            for result in self.pool.imap_unordered(Blockchain.startProcess, params):
+                if result is not None: 
+                    # Remove unconfirmed transactions
+                    self.unconfirmed_transactions = []
+                    return result
+
+            nonce += self.max_workers * self.batch_size
+
+    def addBlock(self, block:Block, proof:str) -> bool:
+        if self.last().createHash() != block.previous_hash and len(self.chain) > 1:
+            print('last block hash does not match block previous hash')
+            return False
+
+        if not self.validateProof(block, proof):
+            print('invalid proof')
+            return False
+
+        block.hash = proof
+
+        self.chain.append(block)
+
+        return True
+
+    def mineNext(self) -> bool: 
+        if not self.unconfirmed_transactions:
+            return False
+
+        next_block = Block(self.last().index + 1, self.unconfirmed_transactions, self.last().createHash())
+
+        next_block.nonce, proof = self.mine(next_block)
+
+        return self.addBlock(next_block, proof)
+
+    # Calling the class destructor to close the worker pool.
+    def __del__(self):
+        self.pool.close()
