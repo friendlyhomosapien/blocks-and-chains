@@ -19,7 +19,7 @@ class TestBlockchain(unittest.TestCase):
         with freeze_time(self.freeze_at):
             factory = Blockchain()
 
-            genesis_block = factory.createGenesisBlock()
+            factory.createGenesisBlock()
 
             self.assertEqual(len(factory.chain), 1)
 
