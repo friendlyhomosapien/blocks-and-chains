@@ -23,23 +23,6 @@ class TestBlockchain(unittest.TestCase):
 
             self.assertEqual(len(factory.chain), 1)
 
-            self.assertEqual(
-                genesis_block.index,
-                factory.chain[0].index
-            )
-            self.assertEqual(
-                genesis_block.previous_hash,
-                factory.chain[0].previous_hash
-            )
-            self.assertEqual(
-                genesis_block.timestamp,
-                factory.chain[0].timestamp
-            )
-            self.assertEqual(
-                genesis_block.nonce,
-                factory.chain[0].nonce
-            )
-
     def test_add_transaction(self):
         with freeze_time(self.freeze_at):
             factory = Blockchain()

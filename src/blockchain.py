@@ -42,6 +42,7 @@ class Blockchain:
         genesis_block.nonce, genesis_block.hash = self.mine(genesis_block)
 
         self.chain.append(genesis_block)
+
         return genesis_block
 
     def validateProof(self, block: Block, proof: str) -> bool:
