@@ -7,13 +7,12 @@ from .transaction import Transaction
 
 class Blockchain:
     difficulty = 1
-    max_workers = 2
+    max_workers = 4
     pool = None
     batch_size = int(2.5e5)
     unconfirmed_transactions = []
 
     def __init__(self) -> None:
-        self.pool = Pool(processes=Blockchain.max_workers)
         self.chain = []
         self.mempool = []
         self.unconfirmed_transactions = []
@@ -100,6 +99,8 @@ class Blockchain:
         return Blockchain.createProof(block, nonce_range[0], nonce_range[1])
 
     def mine(self, block: Block) -> tuple:
+        pool = Pool(processes=Blockchain.max_workers)
+
         nonce = 0
 
         while True:
@@ -112,13 +113,14 @@ class Blockchain:
                 (block, nonce_range) for nonce_range in nonce_ranges
             ]
 
-            for result in self.pool.imap_unordered(
+            for result in pool.imap_unordered(
                 Blockchain.startProcess,
                 params
             ):
                 if result is not None:
                     # Remove unconfirmed transactions
                     self.unconfirmed_transactions = []
+                    pool.close()
                     return result
 
             nonce += self.max_workers * self.batch_size
@@ -154,7 +156,3 @@ class Blockchain:
         next_block.nonce, proof = self.mine(next_block)
 
         return self.addBlock(next_block, proof)
-
-    # Calling the class destructor to close the worker pool.
-    def __del__(self):
-        self.pool.close()
