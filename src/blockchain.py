@@ -7,6 +7,7 @@ from multiprocessing import Pool
 from .Block import Block
 from .Transaction import Transaction
 
+
 class Blockchain:
     difficulty = 1
     max_workers = 2
