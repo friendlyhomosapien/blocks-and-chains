@@ -20,4 +20,4 @@ jobs:
       - name: Run linter
         run: pycodestyle .
 
-      - run: pytest
+      - run: pytest -vv -q -cov
