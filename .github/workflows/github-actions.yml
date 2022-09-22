@@ -25,10 +25,12 @@ jobs:
       - name: Install dependencies
         if: steps.cache-pipenv.outputs.cache-hit != 'true'
         run: |
-          pipenv install --deploy --dev
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Run linter
-        run: pipenv run pycodestyle .
+        run: pycodestyle .
 
-      - name: Run test
-        run: pipenv run pytest -vv -cov -q .
+      - name: Test with pytest
+        run: |
+          pytest
