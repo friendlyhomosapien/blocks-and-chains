@@ -16,7 +16,7 @@ Demo blockchain app by Dave Ligthart.
 
 `pipenv shell`
 
-`FLASK_APP=src flask run`
+`FLASK_APP=blockchain flask run`
 
 `open http://127.0.0.1:5000/api/v1/blocks`
 

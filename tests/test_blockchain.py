@@ -2,8 +2,8 @@ import unittest
 import time
 
 from freezegun import freeze_time
-from src.blockchain import Blockchain
-from src.block import Block
+from blockchain.blockchain import Blockchain
+from blockchain.block import Block
 
 
 class TestBlockchain(unittest.TestCase):

@@ -1,5 +1,5 @@
 import pytest
-from src import create_app
+from blockchain import create_app
 
 
 @pytest.fixture
