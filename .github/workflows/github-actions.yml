@@ -31,4 +31,4 @@ jobs:
         run: pipenv run pycodestyle .
 
       - name: Run test
-        run: pipenv run python pytest -vv -cov -q .
+        run: pipenv run pytest -vv -cov -q .
