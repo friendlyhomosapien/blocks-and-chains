@@ -2,7 +2,7 @@ name: Python actions
 on: [push]
 
 jobs:
-  test
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Check repository
