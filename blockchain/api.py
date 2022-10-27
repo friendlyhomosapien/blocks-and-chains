@@ -1,32 +1,34 @@
-from flask import (Blueprint, jsonify, request)
+from flask import (Blueprint, jsonify, request, current_app)
 from .blockchain import Blockchain
-from .transaction import Transaction
 from .hashrate import calcHashRate
-
 
 bp = Blueprint('api', __name__)
 
-BlockchainInstance = Blockchain()
-
+from blockchain.tasks import (
+    getTransactions as get_transactions,
+    startMining as start_mining,
+    addTransaction as add_transaction,
+    getChain as get_chain,
+    validateChain as validate_chain
+)
 
 @bp.route('/transactions', methods=['GET'])
 def getTransactions():
-    return BlockchainInstance.getUnconfirmedTransactions()
+    current_app.logger.info('calling getTransactions')
+    return get_transactions.delay().id
 
 
 @bp.route('/transactions', methods=['POST'])
 def addTransaction():
     jsonData = request.get_json()
 
+    current_app.logger.info('calling addTransaction')
+
     if all(k in jsonData for k in ([
         'sender', 'receiver', 'amount', 'currency'
     ])):
 
-        BlockchainInstance.addTransaction(jsonData)
-
-        return jsonify({
-            'succes': True
-        }), 200
+        return add_transaction.delay(jsonData).id
 
     return jsonify({
         'error': 'Missing form data',
@@ -41,32 +43,18 @@ def hashRate():
 
 @bp.route('/mine', methods=['POST'])
 def mine():
-    if (BlockchainInstance.mineNext()):
-        return jsonify({
-            'success': True
-        }), 200
-    return jsonify({
-        'success': False
-    }), 500
+    current_app.logger.info('calling mine')
+
+    return start_mining.delay().id
 
 
 @bp.route('/chain', methods=['GET'])
 def getChain():
-    BlockchainInstance.getChain()
-    return jsonify({
-        'chain': BlockchainInstance.getChain()
-    }), 200
+    current_app.logger.info('calling getChain')
+
+    return get_chain.delay().id
 
 
 @bp.route('/chain/validate', methods=['POST'])
 def chainValidate():
-    if BlockchainInstance.validateChain():
-        return jsonify({
-            'success': True,
-            'msg': 'chain is valid'
-        }), 200
-
-    return jsonify({
-        'success': True,
-        'msg': 'chain is invalid'
-    }), 500
+    return validate_chain.delay().id
